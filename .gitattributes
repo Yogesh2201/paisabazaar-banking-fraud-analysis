@@ -1,0 +1,7 @@
+# Keep every file byte for byte as it is on disk.
+# This repo is data heavy, and a line ending rewrite would change dataset.csv
+# and the notebook for no reason.
+* -text
+
+*.pbix binary
+*.png binary

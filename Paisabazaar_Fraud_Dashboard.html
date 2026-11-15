@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paisabazaar Banking Fraud Analysis · Capstone 2 Dashboard</title>
+<style>
+  :root{
+    --page:#f8f9fb;
+    --surface:#ffffff;
+    --surface-2:#f1f5f9;
+    --ink:#1F1B2E;
+    --ink-2:#3f3a52;
+    --muted:#64748b;
+    --faint:#94a3b8;
+    --rule:#e2e8f0;
+    --rule-strong:#cbd5e1;
+    --blue:#0B5FC0;
+    --blue-tint:rgba(11,95,192,.055);
+    --blue-line:rgba(11,95,192,.22);
+    --purple:#692D9A;
+    --purple-ink:#4A1F7A;
+    --poor:#B4232B;
+    --std:#C2761A;
+    --good:#1F7A4D;
+    --rust:#A8452F;
+    --max:1080px;
+  }
+
+  *{box-sizing:border-box;}
+
+  html{color-scheme:light;}
+
+  body{
+    margin:0;
+    background:var(--page);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:15px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:0 32px 72px;
+  }
+
+  /* ---------- masthead ---------- */
+  header.masthead{
+    padding:44px 0 22px;
+    border-bottom:2px solid var(--purple);
+  }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:600;
+    margin:0 0 14px;
+  }
+  .eyebrow span{color:var(--blue);}
+
+  h1{
+    font-size:clamp(26px,4.2vw,40px);
+    line-height:1.16;
+    letter-spacing:-.018em;
+    font-weight:680;
+    color:var(--purple-ink);
+    margin:0 0 12px;
+    max-width:21ch;
+  }
+
+  .deck{
+    font-size:16px;
+    color:var(--ink-2);
+    margin:0;
+    max-width:66ch;
+  }
+
+  .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 26px;
+    margin-top:22px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .meta b{color:var(--ink-2);font-weight:600;}
+  .meta i{font-style:normal;color:var(--faint);}
+
+  /* ---------- verdict ---------- */
+  .verdict{
+    margin:30px 0 0;
+    padding:20px 24px 20px 22px;
+    border-left:4px solid var(--purple);
+    border-radius:0 4px 4px 0;
+    background:linear-gradient(90deg,rgba(170,77,230,.085),rgba(170,77,230,0) 78%);
+  }
+  .verdict .kick{
+    display:block;
+    font-size:10.5px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--purple-ink);
+    font-weight:700;
+    margin-bottom:7px;
+  }
+  .verdict p{
+    margin:0;
+    font-size:16.5px;
+    line-height:1.6;
+    color:var(--ink);
+    max-width:74ch;
+  }
+  .verdict p b{font-weight:650;}
+
+  /* ---------- kpi strip ---------- */
+  .kpis{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    margin:30px 0 0;
+    background:var(--surface);
+  }
+  .kpi{
+    padding:18px 18px 17px;
+    border-left:1px solid var(--rule);
+  }
+  .kpi:first-child{border-left:0;padding-left:0;}
+  .kpi:last-child{padding-right:0;text-align:right;}
+  .kpi .num{
+    display:block;
+    font-size:clamp(20px,2.4vw,27px);
+    font-weight:670;
+    letter-spacing:-.02em;
+    line-height:1.15;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .kpi .lbl{
+    display:block;
+    margin-top:5px;
+    font-size:11.5px;
+    line-height:1.35;
+    color:var(--muted);
+  }
+  .kpi .lbl em{
+    display:block;
+    font-style:normal;
+    color:var(--faint);
+    font-size:11px;
+    margin-top:1px;
+  }
+
+  /* ---------- sections ---------- */
+  section{
+    margin-top:52px;
+    scroll-margin-top:16px;
+  }
+
+  .sec-head{
+    display:grid;
+    grid-template-columns:34px 1fr auto;
+    align-items:baseline;
+    gap:0 14px;
+    padding-bottom:9px;
+    border-bottom:1px solid var(--blue-line);
+  }
+  .sec-id{
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:.04em;
+    padding-top:2px;
+  }
+  h2{
+    font-size:20px;
+    line-height:1.3;
+    letter-spacing:-.012em;
+    font-weight:660;
+    color:var(--blue);
+    margin:0;
+  }
+  .sec-claim{
+    margin:0;
+    font-size:12.5px;
+    color:var(--muted);
+    text-align:right;
+    max-width:38ch;
+    line-height:1.45;
+    padding-top:3px;
+  }
+
+  /* ---------- generic blocks ---------- */
+  .cols{
+    display:grid;
+    gap:34px;
+    margin-top:22px;
+  }
+  .cols.two{grid-template-columns:1.55fr 1fr;}
+  .cols.three{grid-template-columns:repeat(3,1fr);gap:28px;}
+  .cols > *{min-width:0;}
+
+  p.body{margin:0 0 12px;max-width:72ch;}
+  p.body:last-child{margin-bottom:0;}
+
+  .lede{
+    font-size:15.5px;
+    color:var(--ink-2);
+    margin:18px 0 0;
+    max-width:74ch;
+  }
+
+  .note{
+    font-size:12.5px;
+    line-height:1.55;
+    color:var(--muted);
+    margin:14px 0 0;
+    padding-top:10px;
+    border-top:1px solid var(--rule);
+  }
+  .note b{color:var(--ink-2);font-weight:600;}
+  .note code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11.5px;
+    color:var(--purple-ink);
+    background:rgba(105,45,154,.07);
+    padding:1px 5px;
+    border-radius:3px;
+  }
+
+  /* ---------- class distribution ---------- */
+  .dist{margin-top:4px;}
+  .dist-row{
+    display:grid;
+    grid-template-columns:82px 1fr 96px;
+    align-items:center;
+    gap:12px;
+    padding:7px 0;
+  }
+  .dist-row + .dist-row{border-top:1px dashed var(--rule);}
+  .dist-name{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-2);
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .dot{width:9px;height:9px;border-radius:2px;flex:none;}
+  .track{
+    position:relative;
+    height:22px;
+    background:var(--surface-2);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .fill{position:absolute;inset:0 auto 0 0;border-radius:2px;}
+  .fill.p{background:var(--poor);}
+  .fill.s{background:var(--std);}
+  .fill.g{background:var(--good);}
+  .dist-val{
+    font-size:12.5px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink-2);
+  }
+  .dist-val b{font-weight:660;color:var(--ink);}
+  .dist-val span{display:block;font-size:11px;color:var(--faint);}
+
+  /* ---------- stat panel ---------- */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-top:2px solid var(--blue);
+    padding:16px 18px 6px;
+  }
+  .panel h3{
+    font-size:11px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--blue);
+    font-weight:700;
+    margin:0 0 12px;
+  }
+  .stat{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:12px;
+    padding:8px 0;
+    border-top:1px solid var(--rule);
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .stat:first-of-type{border-top:0;}
+  .stat b{
+    font-size:15px;
+    font-weight:660;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+
+  /* ---------- correlation ladder ---------- */
+  .ladder{margin-top:20px;}
+  .lad-scale{
+    display:grid;
+    grid-template-columns:184px 1fr 58px;
+    gap:12px;
+    font-size:10.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--faint);
+    padding-bottom:7px;
+    border-bottom:1px solid var(--rule);
+  }
+  .lad-scale span:nth-child(2){text-align:center;}
+  .lad-scale span:last-child{text-align:right;}
+
+  .lad-row{
+    display:grid;
+    grid-template-columns:184px 1fr 58px;
+    align-items:center;
+    gap:12px;
+    padding:5px 0;
+  }
+  .lad-row + .lad-row{border-top:1px solid rgba(226,232,240,.6);}
+  .lad-lbl{
+    font-size:12.5px;
+    color:var(--ink-2);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .lad-track{
+    position:relative;
+    height:16px;
+    background:
+      linear-gradient(to right,transparent calc(50% - .5px),var(--rule-strong) calc(50% - .5px),var(--rule-strong) calc(50% + .5px),transparent calc(50% + .5px)),
+      var(--surface-2);
+    border-radius:2px;
+  }
+  .lad-bar{
+    position:absolute;
+    top:3px;
+    bottom:3px;
+    border-radius:1px;
+  }
+  .lad-bar.pos{left:50%;background:var(--blue);}
+  .lad-bar.neg{right:50%;background:var(--rust);}
+  .lad-val{
+    font-size:12.5px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .lad-val.pos{color:var(--blue);}
+  .lad-val.neg{color:var(--rust);}
+
+  /* ---------- table ---------- */
+  .twrap{
+    margin-top:20px;
+    overflow-x:auto;
+    background:var(--surface);
+    border:1px solid var(--rule);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    min-width:560px;
+  }
+  thead th{
+    text-align:right;
+    padding:9px 12px;
+    font-size:10.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--blue);
+    background:#f2f6fc;
+    border-bottom:2px solid var(--blue);
+    white-space:nowrap;
+  }
+  thead th:first-child{text-align:left;}
+  tbody td{
+    padding:7px 12px;
+    text-align:right;
+    border-bottom:1px solid var(--rule);
+    font-variant-numeric:tabular-nums;
+    color:var(--ink-2);
+    white-space:nowrap;
+  }
+  tbody td:first-child{
+    text-align:left;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11.5px;
+    color:var(--ink);
+  }
+
+  /* keep the label visible when a wide table scrolls sideways */
+  .twrap thead th{
+    position:sticky;
+    left:0;
+    z-index:2;
+  }
+  .twrap tbody td:first-child{
+    position:sticky;
+    left:0;
+    background:var(--surface);
+    z-index:1;
+  }
+  .twrap tbody tr.total td:first-child{background:var(--surface-2);}
+  tbody tr:last-child td{border-bottom:0;}
+  tbody tr.zero td{color:var(--faint);}
+  tbody tr.total td{
+    background:var(--surface-2);
+    font-weight:660;
+    color:var(--ink);
+    border-top:1px solid var(--rule-strong);
+  }
+  tbody tr.total td:first-child{background:var(--surface-2);}
+  td.barcell{width:120px;padding-right:14px;}
+  .microbar{
+    display:block;
+    height:7px;
+    background:var(--surface-2);
+    border-radius:1px;
+    overflow:hidden;
+  }
+  .microbar i{
+    display:block;
+    height:100%;
+    background:var(--rust);
+    border-radius:1px;
+  }
+
+  /* ---------- accuracy ---------- */
+  .acc{margin-top:6px;}
+  .acc-row{
+    display:grid;
+    grid-template-columns:150px 1fr 72px;
+    gap:12px;
+    align-items:center;
+    padding:9px 0;
+  }
+  .acc-row + .acc-row{border-top:1px dashed var(--rule);}
+  .acc-lbl{font-size:12.5px;color:var(--muted);}
+  .acc-lbl b{display:block;color:var(--ink-2);font-size:12.5px;font-weight:600;}
+  .acc-track{
+    position:relative;
+    height:16px;
+    background:var(--surface-2);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .acc-track i{position:absolute;inset:0 auto 0 0;border-radius:2px;}
+  .acc-track .b1{background:var(--rule-strong);}
+  .acc-track .b2{background:var(--blue);}
+  .acc-val{
+    font-size:14px;
+    font-weight:670;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+
+  /* ---------- confusion ---------- */
+  table.cm{min-width:520px;}
+  table.cm thead th{text-align:center;}
+  table.cm thead th:first-child{text-align:left;}
+  table.cm tbody td{text-align:center;}
+  table.cm tbody td:first-child{
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+    text-align:left;
+  }
+  table.cm .diag{background:rgba(11,95,192,.13);font-weight:660;color:var(--ink);}
+  table.cm .err{color:var(--poor);}
+  table.cm .recall{
+    background:var(--surface-2);
+    font-weight:660;
+    color:var(--ink);
+    border-left:1px solid var(--rule-strong);
+  }
+  .cm-cap{
+    font-size:11.5px;
+    color:var(--muted);
+    margin:9px 0 0;
+  }
+  .cm-cap b{color:var(--ink-2);font-weight:600;}
+
+  /* ---------- stacked bar ---------- */
+  .stack{
+    display:flex;
+    height:38px;
+    border-radius:2px;
+    overflow:hidden;
+    margin-top:18px;
+    border:1px solid var(--rule);
+  }
+  .stack div{
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    font-size:11.5px;
+    font-weight:660;
+    color:#fff;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+  .stack .ok{background:var(--good);}
+  .stack .bad{background:var(--rust);}
+
+  table.tight{min-width:0;margin-top:4px;}
+  table.tight thead th{background:transparent;border-bottom:1px solid var(--rule-strong);color:var(--muted);font-size:10px;}
+  table.tight tbody td{border-bottom:1px solid rgba(226,232,240,.7);padding:6px 10px;}
+  table.tight tbody td:first-child{font-family:inherit;font-size:12px;}
+
+  /* ---------- flags ---------- */
+  .flag{
+    padding:14px 0;
+    border-top:1px solid var(--rule);
+  }
+  .flag:first-child{border-top:0;padding-top:2px;}
+  .flag .fh{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+  }
+  .flag .fn{font-size:12.5px;font-weight:660;color:var(--ink);}
+  .flag .fv{
+    font-size:12.5px;
+    font-weight:670;
+    color:var(--poor);
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .flag p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  .clean{
+    margin-top:16px;
+    padding:12px 14px;
+    background:rgba(31,122,77,.055);
+    border-left:3px solid var(--good);
+    font-size:12.5px;
+    color:var(--ink-2);
+    line-height:1.5;
+  }
+  .clean b{font-weight:660;}
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top:60px;
+    padding-top:18px;
+    border-top:2px solid var(--rule-strong);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:26px 40px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  footer h4{
+    margin:0 0 5px;
+    font-size:10.5px;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--blue);
+    font-weight:700;
+  }
+  footer p{margin:0;}
+  footer b{color:var(--ink-2);font-weight:600;}
+  footer .sig{
+    grid-column:1 / -1;
+    padding-top:14px;
+    border-top:1px solid var(--rule);
+    font-size:11.5px;
+    color:var(--faint);
+  }
+
+  .sr-only{
+    position:absolute;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .wrap{padding:0 22px 56px;}
+    .cols.two,.cols.three{grid-template-columns:1fr;gap:26px;}
+    .kpis{grid-template-columns:repeat(3,1fr);}
+    .kpi:nth-child(4){border-left:0;padding-left:0;}
+    .kpi:nth-child(3){padding-right:0;text-align:right;}
+    .sec-head{grid-template-columns:28px 1fr;}
+    .sec-claim{grid-column:2;text-align:left;margin-top:5px;max-width:none;}
+    .lad-scale,.lad-row{grid-template-columns:150px 1fr 50px;gap:9px;}
+    .acc-row{grid-template-columns:120px 1fr 62px;gap:9px;}
+    footer{grid-template-columns:1fr;}
+  }
+
+  @media (max-width:560px){
+    body{font-size:14.5px;}
+    .wrap{padding:0 16px 48px;}
+    header.masthead{padding-top:32px;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .kpi{padding:14px 14px 13px;}
+    .kpi:nth-child(odd){border-left:0;padding-left:0;}
+    .kpi:nth-child(even){text-align:right;padding-right:0;border-left:1px solid var(--rule);}
+    .kpi:nth-child(3){padding-right:14px;text-align:left;border-left:0;}
+    .dist-row{grid-template-columns:70px 1fr 78px;gap:8px;}
+    .lad-scale,.lad-row{grid-template-columns:minmax(0,1fr) 62px 46px;gap:7px;}
+    .lad-scale{grid-template-columns:minmax(0,1fr) 46px;}
+    .lad-scale span:nth-child(2){display:none;}
+    .lad-row{padding:6px 0;}
+    .lad-lbl{font-size:11px;}
+    .lad-track{height:14px;}
+    .lad-val{font-size:11.5px;}
+    .verdict{padding:16px 16px 16px 15px;}
+    .verdict p{font-size:15px;}
+    section{margin-top:40px;}
+    .acc-row{grid-template-columns:1fr 58px;}
+    .acc-row .acc-track{grid-column:1 / -1;order:3;}
+  }
+
+  @media print{
+    body{background:#fff;font-size:10.5pt;}
+    .wrap{max-width:none;padding:0;}
+    section{page-break-inside:avoid;margin-top:26pt;}
+    .kpis,.panel,.twrap{break-inside:avoid;}
+    .twrap{overflow:visible;border:1px solid #cbd5e1;}
+    thead th,tbody td:first-child{position:static;}
+    .lad-bar.neg{background:#8a3a28;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Capstone Project 2 &nbsp;·&nbsp; <span>Exploratory data analysis</span></p>
+  <h1>Paisabazaar Banking Fraud Analysis</h1>
+  <p class="deck">One hundred thousand monthly credit records, three score classes, and only two columns where a fraud signal can actually live. This is what the numbers say once the obvious readings are checked.</p>
+  <div class="meta">
+    <span><i>Dataset</i> &nbsp;<b>dataset.csv</b></span>
+    <span><i>Rows</i> &nbsp;<b>100,000</b></span>
+    <span><i>Columns</i> &nbsp;<b>28</b></span>
+    <span><i>Notebook</i> &nbsp;<b>105 cells, 14 charts</b></span>
+    <span><i>Prepared</i> &nbsp;<b>15 Nov 2026</b></span>
+  </div>
+
+  <div class="verdict">
+    <span class="kick">The short version</span>
+    <p>The file is clean in the two ways people usually check and wrong in three ways they usually do not. <b>No missing values, no duplicate rows</b>, yet 5,868 rows describe someone under 18, 11,824 report a credit history longer than the person has been alive, and the score moves for 58.3% of customers inside eight months. The model lands at <b>68.40%</b> against a <b>53.40%</b> floor, which is useful for sorting a queue and not enough to approve a loan.</p>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="kpi">
+    <span class="num">100,000</span>
+    <span class="lbl">records<em>28 columns, no nulls</em></span>
+  </div>
+  <div class="kpi">
+    <span class="num">12,500</span>
+    <span class="lbl">customers<em>8 rows each</em></span>
+  </div>
+  <div class="kpi">
+    <span class="num">58.3%</span>
+    <span class="lbl">change score<em>at least once</em></span>
+  </div>
+  <div class="kpi">
+    <span class="num">22.9%</span>
+    <span class="lbl">rows with an outlier<em>all on the high side</em></span>
+  </div>
+  <div class="kpi">
+    <span class="num">68.40%</span>
+    <span class="lbl">model accuracy<em>15.00 pts over baseline</em></span>
+  </div>
+  <div class="kpi">
+    <span class="num">18.1%</span>
+    <span class="lbl">names with 2 to 6 SSNs<em>the only fraud signal</em></span>
+  </div>
+</div>
+
+
+<!-- ============================================================ 01 -->
+<section id="s1">
+  <div class="sec-head">
+    <div class="sec-id">01</div>
+    <h2>What is actually in the file</h2>
+    <p class="sec-claim">Three classes, badly unbalanced, and a target that will not sit still.</p>
+  </div>
+
+  <p class="lede">Standard is more than half the file. That one fact decides how every result after it has to be read, because a model that always answers "Standard" and learns nothing scores 53.2% on its own.</p>
+
+  <div class="cols two">
+    <div>
+      <div class="dist" role="img" aria-label="Credit score distribution: Standard 53,174 records at 53.2 percent, Poor 28,998 at 29.0 percent, Good 17,828 at 17.8 percent.">
+        <div class="dist-row">
+          <span class="dist-name"><i class="dot" style="background:var(--std)"></i>Standard</span>
+          <span class="track"><span class="fill s" style="width:53.17%"></span></span>
+          <span class="dist-val"><b>53,174</b><span>53.2%</span></span>
+        </div>
+        <div class="dist-row">
+          <span class="dist-name"><i class="dot" style="background:var(--poor)"></i>Poor</span>
+          <span class="track"><span class="fill p" style="width:29.00%"></span></span>
+          <span class="dist-val"><b>28,998</b><span>29.0%</span></span>
+        </div>
+        <div class="dist-row">
+          <span class="dist-name"><i class="dot" style="background:var(--good)"></i>Good</span>
+          <span class="track"><span class="fill g" style="width:17.83%"></span></span>
+          <span class="dist-val"><b>17,828</b><span>17.8%</span></span>
+        </div>
+      </div>
+      <p class="note"><b>Read the shape, not the biggest number.</b> Standard is nearly three times the size of Good, so any plain accuracy figure is mostly a measure of the middle group. The floor of 53.40% is what the test set gives a model that only ever guesses Standard.</p>
+    </div>
+
+    <div class="panel">
+      <h3>The panel, not a crowd</h3>
+      <div class="stat"><span>Rows per customer</span><b>8</b></div>
+      <div class="stat"><span>Months covered</span><b>1 to 8</b></div>
+      <div class="stat"><span>Same score all 8 months</span><b>41.7%</b></div>
+      <div class="stat"><span>Score changes at least once</span><b>58.3%</b></div>
+      <p class="note" style="margin-top:12px">So a count in any chart is a count of monthly records, not of people. Every step that splits or scores the data groups by <code>Customer_ID</code> first.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ 02 -->
+<section id="s2">
+  <div class="sec-head">
+    <div class="sec-id">02</div>
+    <h2>What moves with the score</h2>
+    <p class="sec-claim">One column is far ahead. Income is weaker than it looks.</p>
+  </div>
+
+  <p class="lede">Correlation with <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">Credit_Score</code>, on a scale where the bar length is the strength and the side is the direction. Negative means the column rises as the score falls.</p>
+
+  <div class="ladder">
+    <div class="lad-scale">
+      <span>Column</span>
+      <span>lower score &nbsp;←&nbsp;&nbsp;&nbsp;→&nbsp; higher score</span>
+      <span>r</span>
+    </div>
+
+    <div class="lad-row" role="img" aria-label="Credit Mix, correlation plus 0.499">
+      <span class="lad-lbl">Credit_Mix</span>
+      <span class="lad-track"><span class="lad-bar pos" style="width:45.4%"></span></span>
+      <span class="lad-val pos">+0.499</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Annual Income, correlation plus 0.213">
+      <span class="lad-lbl">Annual_Income</span>
+      <span class="lad-track"><span class="lad-bar pos" style="width:19.4%"></span></span>
+      <span class="lad-val pos">+0.213</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Monthly Inhand Salary, correlation plus 0.210">
+      <span class="lad-lbl">Monthly_Inhand_Salary</span>
+      <span class="lad-track"><span class="lad-bar pos" style="width:19.1%"></span></span>
+      <span class="lad-val pos">+0.210</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Monthly Balance, correlation plus 0.198">
+      <span class="lad-lbl">Monthly_Balance</span>
+      <span class="lad-track"><span class="lad-bar pos" style="width:18.0%"></span></span>
+      <span class="lad-val pos">+0.198</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Age, correlation plus 0.160">
+      <span class="lad-lbl">Age</span>
+      <span class="lad-track"><span class="lad-bar pos" style="width:14.5%"></span></span>
+      <span class="lad-val pos">+0.160</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Number of Loans, correlation minus 0.358">
+      <span class="lad-lbl">Num_of_Loan</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:32.5%"></span></span>
+      <span class="lad-val neg">−0.358</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Outstanding Debt, correlation minus 0.387">
+      <span class="lad-lbl">Outstanding_Debt</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:35.2%"></span></span>
+      <span class="lad-val neg">−0.387</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Number of Bank Accounts, correlation minus 0.388">
+      <span class="lad-lbl">Num_Bank_Accounts</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:35.3%"></span></span>
+      <span class="lad-val neg">−0.388</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Number of Credit Cards, correlation minus 0.404">
+      <span class="lad-lbl">Num_Credit_Card</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:36.7%"></span></span>
+      <span class="lad-val neg">−0.404</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Delay from due date, correlation minus 0.431">
+      <span class="lad-lbl">Delay_from_due_date</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:39.2%"></span></span>
+      <span class="lad-val neg">−0.431</span>
+    </div>
+    <div class="lad-row" role="img" aria-label="Interest Rate, correlation minus 0.485">
+      <span class="lad-lbl">Interest_Rate</span>
+      <span class="lad-track"><span class="lad-bar neg" style="width:44.1%"></span></span>
+      <span class="lad-val neg">−0.485</span>
+    </div>
+  </div>
+
+  <div class="cols three" style="margin-top:24px">
+    <div>
+      <p class="body"><b>Credit Mix is the cheapest signal in the file.</b> Customers with a Bad mix are 60.1% Poor and 1.5% Good. Customers with a Good mix are 48.9% Good and 16.0% Poor. That gap comes from a field already on the application form.</p>
+    </div>
+    <div>
+      <p class="body"><b>Income is two columns wearing one coat.</b> <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">Annual_Income</code> and <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">Monthly_Inhand_Salary</code> correlate at 0.998 with each other. Keeping both adds nothing and makes the model harder to explain.</p>
+    </div>
+    <div>
+      <p class="body"><b>Correlation and importance disagree in one place.</b> <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">Credit_Utilization_Ratio</code> sits at +0.046, almost zero, yet ranks third inside the Random Forest. A tree uses a weak column in combination with others.</p>
+    </div>
+  </div>
+
+  <p class="note"><b>Outside this ladder.</b> <code>Num_Credit_Inquiries</code> (−0.435) and <code>Payment_of_Min_Amount</code> (−0.415) both correlate strongly, but the first is a count that duplicates the loan columns and the second is nominal, so neither belongs in a numeric correlation table.</p>
+</section>
+
+
+<!-- ============================================================ 03 -->
+<section id="s3">
+  <div class="sec-head">
+    <div class="sec-id">03</div>
+    <h2>Outliers, by the IQR rule</h2>
+    <p class="sec-claim">Nearly a quarter of the file is flagged. None of it was deleted.</p>
+  </div>
+
+  <p class="lede">Any value outside <b>Q1 − 1.5 × IQR</b> to <b>Q3 + 1.5 × IQR</b> counts as an outlier. Applied to the fifteen numeric columns, that flags <b>22,919 rows</b>. Every lower bound in the table below is negative, so nothing is being called too small. All of it is the high side.</p>
+
+  <div class="twrap">
+    <table>
+      <caption class="sr-only">Interquartile range bounds and outlier counts for each numeric column</caption>
+      <thead>
+        <tr>
+          <th scope="col">Column</th>
+          <th scope="col">Q1</th>
+          <th scope="col">Q3</th>
+          <th scope="col">Upper bound</th>
+          <th scope="col">Outliers</th>
+          <th scope="col">Share</th>
+          <th scope="col" style="text-align:left">0 to 8% of rows</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Monthly_Balance</td><td>267.62</td><td>463.22</td><td>756.62</td><td>7,400</td><td>7.40%</td><td class="barcell"><span class="microbar"><i style="width:92.5%"></i></span></td></tr>
+        <tr><td>Outstanding_Debt</td><td>566.07</td><td>1,945.96</td><td>4,015.80</td><td>5,272</td><td>5.27%</td><td class="barcell"><span class="microbar"><i style="width:65.9%"></i></span></td></tr>
+        <tr><td>Total_EMI_per_month</td><td>29.27</td><td>147.39</td><td>324.58</td><td>5,044</td><td>5.04%</td><td class="barcell"><span class="microbar"><i style="width:63.0%"></i></span></td></tr>
+        <tr><td>Amount_invested_monthly</td><td>27.96</td><td>71.30</td><td>136.30</td><td>4,464</td><td>4.46%</td><td class="barcell"><span class="microbar"><i style="width:55.8%"></i></span></td></tr>
+        <tr><td>Delay_from_due_date</td><td>10.00</td><td>28.00</td><td>55.00</td><td>4,002</td><td>4.00%</td><td class="barcell"><span class="microbar"><i style="width:50.0%"></i></span></td></tr>
+        <tr><td>Monthly_Inhand_Salary</td><td>1,626.59</td><td>5,957.72</td><td>12,454.40</td><td>2,017</td><td>2.02%</td><td class="barcell"><span class="microbar"><i style="width:25.2%"></i></span></td></tr>
+        <tr><td>Annual_Income</td><td>19,342.97</td><td>71,683.47</td><td>150,194.22</td><td>2,000</td><td>2.00%</td><td class="barcell"><span class="microbar"><i style="width:25.0%"></i></span></td></tr>
+        <tr><td>Num_Credit_Inquiries</td><td>3.00</td><td>8.00</td><td>15.50</td><td>787</td><td>0.79%</td><td class="barcell"><span class="microbar"><i style="width:9.8%"></i></span></td></tr>
+        <tr><td>Credit_Utilization_Ratio</td><td>28.05</td><td>36.50</td><td>49.16</td><td>4</td><td>0.00%</td><td class="barcell"><span class="microbar"><i style="width:0.5%"></i></span></td></tr>
+        <tr class="zero"><td>Num_of_Loan</td><td>2.00</td><td>5.00</td><td>9.50</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="zero"><td>Num_Bank_Accounts</td><td>3.00</td><td>7.00</td><td>13.00</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="zero"><td>Age</td><td>24.00</td><td>42.00</td><td>69.00</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="zero"><td>Interest_Rate</td><td>7.00</td><td>20.00</td><td>39.50</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="zero"><td>Num_Credit_Card</td><td>4.00</td><td>7.00</td><td>11.50</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="zero"><td>Num_of_Delayed_Payment</td><td>9.00</td><td>18.00</td><td>31.50</td><td>0</td><td>0.00%</td><td class="barcell"><span class="microbar"></span></td></tr>
+        <tr class="total"><td>Rows with any outlier</td><td></td><td></td><td></td><td>22,919</td><td>22.92%</td><td class="barcell"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cols two" style="margin-top:22px">
+    <div>
+      <p class="body"><b>Why nothing was removed.</b> Two reasons, and the second one matters more. Deleting 22.9% of the file to fix a few large values costs more than it gains. And a customer with a high income or a large outstanding loan is not a data entry error, it is a customer with a bigger loan. Those are the people a lender cares about most, so removing the rows would delete the best part of the book.</p>
+    </div>
+    <div>
+      <p class="body"><b>Why capping was not needed either.</b> The model is a Random Forest, which splits on order rather than distance, so one customer earning 180,000 does not drag the fit the way it drags an average. A linear model in this notebook would have needed a cap first. That reasoning is written into Section 3 of the notebook rather than left silent.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ 04 -->
+<section id="s4">
+  <div class="sec-head">
+    <div class="sec-id">04</div>
+    <h2>The model, and what it is worth</h2>
+    <p class="sec-claim">68.40% sounds strong until the floor is 53.40%.</p>
+  </div>
+
+  <div class="cols two">
+    <div>
+      <div class="acc" role="img" aria-label="Accuracy: always guessing Standard gives 53.40 percent, the Random Forest gives 68.40 percent.">
+        <div class="acc-row">
+          <span class="acc-lbl"><b>Always "Standard"</b>the floor</span>
+          <span class="acc-track"><i class="b1" style="width:53.4%"></i></span>
+          <span class="acc-val">53.40%</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-lbl"><b>Random Forest</b>split by customer</span>
+          <span class="acc-track"><i class="b2" style="width:68.4%"></i></span>
+          <span class="acc-val">68.40%</span>
+        </div>
+      </div>
+      <p class="note"><b>The 15 points are the whole result.</b> Splitting by row instead of by customer gives 78.10%, and that extra 9.7 points is the model recognising people it already trained on. Each customer appears eight times, so a row split puts the same person on both sides.</p>
+
+      <div class="twrap">
+        <table class="cm">
+          <caption class="sr-only">Confusion matrix on 25,000 held out rows, by actual and predicted credit score</caption>
+          <thead>
+            <tr>
+              <th scope="col">Actual ↓ &nbsp; Predicted →</th>
+              <th scope="col">Poor</th>
+              <th scope="col">Standard</th>
+              <th scope="col">Good</th>
+              <th scope="col" class="recall">Recall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Poor</td>
+              <td class="diag">4,790</td>
+              <td class="err">1,936</td>
+              <td class="err">520</td>
+              <td class="recall">66.1%</td>
+            </tr>
+            <tr>
+              <td>Standard</td>
+              <td class="err">2,186</td>
+              <td class="diag">9,545</td>
+              <td class="err">1,618</td>
+              <td class="recall">71.5%</td>
+            </tr>
+            <tr>
+              <td>Good</td>
+              <td class="err">118</td>
+              <td class="err">1,523</td>
+              <td class="diag">2,764</td>
+              <td class="recall">62.7%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cm-cap"><b>The worst cell is not the smallest one.</b> 1,523 of 4,405 Good customers, 34.6%, are filed as Standard. That is the model's single biggest mistake and the expensive one, because those are the customers a lender most wants to keep.</p>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h3>Columns the model leaned on</h3>
+        <div class="stat"><span>Outstanding_Debt</span><b>0.124</b></div>
+        <div class="stat"><span>Monthly_Balance</span><b>0.094</b></div>
+        <div class="stat"><span>Credit_Utilization_Ratio</span><b>0.091</b></div>
+        <div class="stat"><span>Interest_Rate</span><b>0.090</b></div>
+        <div class="stat"><span>Credit_Mix</span><b>0.085</b></div>
+        <p class="note" style="margin-top:12px">Three of these five also top the correlation ladder, so two different methods picked the same columns. Fifteen features in total, all already collected.</p>
+      </div>
+
+      <p class="note" style="margin-top:18px"><b>What it can and cannot do.</b> 68.40% means roughly three mistakes in every ten rows. That is fine for sorting a queue and not fine for a decision about money. Used as a ranking tool with a person reviewing the borderline cases, it earns its place. Used to approve or reject automatically, it turns away 4 in 10 good customers.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ 05 -->
+<section id="s5">
+  <div class="sec-head">
+    <div class="sec-id">05</div>
+    <h2>The only real fraud signal</h2>
+    <p class="sec-claim">It lives in the two columns that were dropped before modelling.</p>
+  </div>
+
+  <p class="lede"><code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">Name</code> and <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 5px;border-radius:3px">SSN</code> are not model features, which is why they are usually dropped in the first cell. They are also the only place where an identity problem can appear, so they were kept aside and checked once.</p>
+
+  <div class="cols two">
+    <div>
+      <div class="stack" role="img" aria-label="Of 10,128 distinct names, 8,299 have one SSN and 1,829 have between two and six.">
+        <div class="ok" style="width:81.94%">8,299 names · one SSN · 82.0%</div>
+        <div class="bad" style="width:18.06%">1,829 · 18.1%</div>
+      </div>
+
+      <table class="tight" style="margin-top:16px">
+        <caption class="sr-only">Number of names by count of distinct SSNs under that name</caption>
+        <thead>
+          <tr>
+            <th scope="col">Identities per name</th>
+            <th scope="col">Names</th>
+            <th scope="col">Share of 1,829</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2</td><td>1,413</td><td>77.3%</td></tr>
+          <tr><td>3</td><td>319</td><td>17.4%</td></tr>
+          <tr><td>4</td><td>70</td><td>3.8%</td></tr>
+          <tr><td>5</td><td>24</td><td>1.3%</td></tr>
+          <tr><td>6</td><td>3</td><td>0.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <h3>Reach of the finding</h3>
+        <div class="stat"><span>Distinct names</span><b>10,128</b></div>
+        <div class="stat"><span>Distinct SSNs</span><b>12,500</b></div>
+        <div class="stat"><span>Names with 2+ SSNs</span><b>1,829</b></div>
+        <div class="stat"><span>Customer records behind them</span><b>4,201</b></div>
+        <div class="stat"><span>Rows behind them</span><b>33,608</b></div>
+        <div class="stat"><span>Share of the file</span><b>33.6%</b></div>
+      </div>
+      <p class="body">The check needs no model and no new data. It is one line: does this name already exist against a different SSN. It can run before any money is approved, and it catches something a credit score never can, because a score describes how someone repaid and not who they are.</p>
+    </div>
+  </div>
+
+  <p class="note"><b>The honest caveat.</b> This file looks generated, so 1,829 names with several SSNs is probably a side effect of how it was built rather than 1,829 real people. The deliverable is the check, not the names. It should flag an application for a manual look and never reject automatically, because a common name can repeat by chance.</p>
+</section>
+
+
+<!-- ============================================================ 06 -->
+<section id="s6">
+  <div class="sec-head">
+    <div class="sec-id">06</div>
+    <h2>What is broken, and what is not</h2>
+    <p class="sec-claim">The clean checks pass. The impossible values do not.</p>
+  </div>
+
+  <div class="cols two">
+    <div>
+      <div class="flag">
+        <div class="fh"><span class="fn">Age below 18</span><span class="fv">5,868 rows</span></div>
+        <p>5.87% of the file, and the youngest age is 14. A 14 year old cannot hold a credit card or a home loan, so these rows are not real. They were reported, not deleted.</p>
+      </div>
+      <div class="flag">
+        <div class="fh"><span class="fn">Credit history longer than the person's age</span><span class="fv">11,824 rows</span></div>
+        <p>11.82% of the file, where <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--purple-ink);background:rgba(105,45,154,.07);padding:1px 4px;border-radius:3px">Credit_History_Age</code> in months exceeds age in years × 12. Impossible on its face, and no model can repair it afterwards.</p>
+      </div>
+      <div class="flag">
+        <div class="fh"><span class="fn">Type_of_Loan left out of the model</span><span class="fv" style="color:var(--muted)">6,261 combinations</span></div>
+        <p>Not an error, a modelling gap. Stored as one free-text string, so it would need splitting into separate yes and no columns first. Tested on its own it added almost nothing, because the loan count already carries the same information.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="clean">
+        <b>The two headline checks pass.</b> There are zero missing values across all 28 columns and zero duplicate rows. That is why there is no imputation in this notebook, and why the cleaning work sits on impossible values instead.
+      </div>
+      <p class="body" style="margin-top:18px"><b>What that cost the analysis.</b> A file with no nulls looks finished, so the usual first pass finds nothing to do. The problems here only surface when a rule is applied to a value: an age below 18, a history longer than a life, a lower bound that is negative. Each of those needed a check written on purpose.</p>
+      <p class="body"><b>The fix belongs at the source.</b> Correcting 17,692 impossible rows after the fact changes the data. The rules that generate the values should be corrected instead, which is why they are listed as next steps rather than patched in the notebook.</p>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div>
+    <h4>How the numbers were made</h4>
+    <p>Outliers use the 1.5 × IQR rule on fifteen numeric columns. The model is a Random Forest with 100 trees on 15 features, split 75/25 with <b>GroupShuffleSplit</b> on <code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--purple-ink)">Customer_ID</code>. Every figure on this page is printed by a cell in the notebook.</p>
+  </div>
+  <div>
+    <h4>Source</h4>
+    <p><b>Paisabazaar Banking Fraud Analysis_Capstone Project_STUDENT.ipynb</b><br>105 cells, 14 charts, 37 code cells, no failures.<br>Data: <b>dataset.csv</b>, 100,000 rows × 28 columns.</p>
+  </div>
+  <div class="sig">
+    Capstone Project 2 dashboard · 15 Nov 2026 · Every value recomputed from <b>dataset.csv</b> rather than copied from an earlier draft.
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

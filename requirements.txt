@@ -1,0 +1,9 @@
+# Everything the notebook imports.
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+
+# To open the notebook itself.
+jupyter
