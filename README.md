@@ -2,7 +2,7 @@
 
 A capstone project on a credit bureau dataset from Paisabazaar: what in a customer's profile actually separates a **Good** credit score from a **Poor** one, and how much of the data can be trusted at all.
 
-The work is a Python notebook (EDA plus a baseline model), a Power BI report, and a single-file HTML dashboard.
+The work is a Python notebook (EDA plus a baseline model) and a Power BI report.
 
 ![Dashboard preview](dashboard-preview.png)
 
@@ -15,7 +15,6 @@ The work is a Python notebook (EDA plus a baseline model), a Power BI report, an
 | `Paisabazaar Banking Fraud Analysis_Capstone Project.ipynb` | The main notebook. 105 cells, 14 charts, runs start to finish with no errors. |
 | `dataset.csv` | The source data. 100,000 rows, 28 columns, 30 MB. |
 | `Paisabazaar_Fraud_Dashboard.pbix` | Power BI report. 3 pages, 32 visuals. |
-| `Paisabazaar_Fraud_Dashboard.html` | The same story as one HTML file. Opens in any browser, no install, no internet. |
 | `dashboard-preview.png` | Screenshot of page 1 of the Power BI report. |
 
 Project type: **EDA**. Contribution: **Individual**. Author: **Yogesh Kumar**.
@@ -29,7 +28,7 @@ Paisabazaar is a lending marketplace. A customer fills in one application, Paisa
 1. **What in a customer's profile actually moves the score?** If a person wants a better score, which numbers should they work on and which ones make no difference?
 2. **How much of this data is a real customer?** Banks lose money to identity fraud, so the second question is whether one person is hiding behind many records.
 
-The notebook answers both from the data. The dashboards put the answers on one screen for a business audience.
+The notebook answers both from the data. The dashboard puts the answers on one screen for a business audience.
 
 ---
 
@@ -187,11 +186,9 @@ Feature importance agrees with the EDA, which is the point:
 
 ---
 
-## The dashboards
+## The dashboard
 
-### Power BI (`Paisabazaar_Fraud_Dashboard.pbix`)
-
-Three pages, 32 visuals, built on the same CSV.
+`Paisabazaar_Fraud_Dashboard.pbix`, built on the same CSV. Three pages, 32 visuals.
 
 | Page | Visuals | What it answers |
 |---|---:|---|
@@ -200,10 +197,6 @@ Three pages, 32 visuals, built on the same CSV.
 | Risk segments | 7 | Who to look at first, and how much of the book they are |
 
 The KPI cards shorten large numbers (50,987 shows as 51K) because the card visual compacts them. The exact figures are printed in the header text of each page so nothing is lost.
-
-### HTML (`Paisabazaar_Fraud_Dashboard.html`)
-
-Six sections in one file. No libraries, no CDN, no internet needed. Double-click it and it opens.
 
 ---
 
