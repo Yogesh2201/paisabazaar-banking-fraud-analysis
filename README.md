@@ -12,7 +12,7 @@ The work is a Python notebook (EDA plus a baseline model) and a Power BI report.
 
 | Path | What it is |
 |---|---|
-| `Paisabazaar Banking Fraud Analysis_Capstone Project.ipynb` | The main notebook. 105 cells, 14 charts, runs start to finish with no errors. |
+| `Paisabazaar_Banking_Fraud_Analysis_Capstone_Project.ipynb` | The main notebook. 99 cells, 10 charts, runs start to finish with no errors. |
 | `dataset.csv` | The source data. 100,000 rows, 28 columns, 30 MB. |
 | `Paisabazaar_Fraud_Dashboard.pbix` | Power BI report. 3 pages, 32 visuals. |
 | `dashboard-preview.png` | Screenshot of page 1 of the Power BI report. |
@@ -204,7 +204,7 @@ The KPI cards shorten large numbers (50,987 shows as 51K) because the card visua
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook "Paisabazaar Banking Fraud Analysis_Capstone Project.ipynb"
+jupyter notebook "Paisabazaar_Banking_Fraud_Analysis_Capstone_Project.ipynb"
 ```
 
 Run the cells top to bottom. The notebook reads `dataset.csv` from the same folder and runs end to end without errors, ending with the model results.
