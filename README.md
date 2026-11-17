@@ -2,7 +2,7 @@
 
 A capstone project on a credit bureau dataset from Paisabazaar: what in a customer's profile actually separates a **Good** credit score from a **Poor** one, and how much of the data can be trusted at all.
 
-The work is a Python notebook (EDA plus a baseline model) and a Power BI report.
+The work is a Python notebook of exploratory analysis and a Power BI report.
 
 ![Dashboard preview](dashboard-preview.png)
 
@@ -12,7 +12,7 @@ The work is a Python notebook (EDA plus a baseline model) and a Power BI report.
 
 | Path | What it is |
 |---|---|
-| `Paisabazaar_Banking_Fraud_Analysis_Capstone_Project.ipynb` | The main notebook. 99 cells, 10 charts, runs start to finish with no errors. |
+| `Paisabazaar_Banking_Fraud_Analysis_Capstone_Project.ipynb` | The main notebook. 97 cells, 11 charts, runs start to finish with no errors. |
 | `dataset.csv` | The source data. 100,000 rows, 28 columns, 30 MB. |
 | `Paisabazaar_Fraud_Dashboard.pbix` | Power BI report. 3 pages, 32 visuals. |
 | `dashboard-preview.png` | Screenshot of page 1 of the Power BI report. |
@@ -57,7 +57,7 @@ The data arrives messy on purpose, the way real bureau exports do. Cleaning is a
 | Poor | 28,998 | 29.0% |
 | Good | 17,828 | 17.8% |
 
-So any model that always answers "Standard" is right 53.4% of the time. That is the number to beat. Every accuracy figure below is measured against it.
+A rule that always answers "Standard" would be right 53.4% of the time. Keep that number in mind: every pattern below has to beat it before it is worth acting on.
 
 ### 2. Debt is the biggest divider
 
@@ -99,11 +99,10 @@ Same story with **occupation**: average debt sits between 1,343 and 1,486 across
 | Credit_Mix | +0.499 | Interest_Rate | −0.485 |
 | Annual_Income | +0.213 | Num_Credit_Inquiries | −0.435 |
 | Monthly_Inhand_Salary | +0.210 | Delay_from_due_date | −0.431 |
-| Monthly_Balance | +0.198 | Payment_of_Min_Amount | −0.415 |
-| Age | +0.160 | Num_Credit_Card | −0.404 |
-| Credit_Utilization_Ratio | +0.046 | Num_Bank_Accounts | −0.388 |
-| Total_EMI_per_month | +0.017 | Outstanding_Debt | −0.387 |
-| | | Num_of_Loan | −0.358 |
+| Monthly_Balance | +0.198 | Num_Credit_Card | −0.404 |
+| Age | +0.160 | Num_Bank_Accounts | −0.388 |
+| Credit_Utilization_Ratio | +0.046 | Outstanding_Debt | −0.387 |
+| Total_EMI_per_month | +0.017 | Num_of_Loan | −0.358 |
 
 `Credit_Mix` is the strongest single signal in the dataset. It is also the one a customer can fix fastest: it is a mix of loan types, not a history of them.
 
@@ -151,38 +150,14 @@ Someone with two SSNs can be a clerical duplicate. Someone with six is a pattern
 
 ---
 
-## The model
+## What the notebook does not do
 
-A logistic regression as a **baseline**, not as a production model. Its job is to prove the patterns above survive being fitted, not to predict credit scores.
+There is no model in this notebook, and the numbers above are descriptive. They show what moves with the credit score across 100,000 records, not what would happen if a bank acted on them. Two things follow:
 
-| | Score |
-|---|---:|
-| Baseline (always "Standard") | 53.40% |
-| Model, split by `Customer_ID` | **68.40%** |
-| Gain over baseline | +15.00 pts |
-| Model, split by row (wrong way) | 78.10% |
+- **A row is one month, not one customer.** 58.3% of customers change score at least once during the eight months, so every per-row pattern here is a per-month pattern.
+- **Association is not cause.** Late payment, a high interest rate and heavy debt move together. The data cannot say which one starts the chain.
 
-**Why the split matters.** The dataset has 12,500 customers over 8 months, so the same person shows up 8 times. Shuffle rows and the model sees seven months of a customer in training and the eighth in test. It memorises the person and scores 78.10%. Group the split by `Customer_ID` and that leak closes: **68.40%**. The notebook shows both numbers and explains why the lower one is the honest one.
-
-Per-class recall on the group split:
-
-| Class | Correct | Total | Recall |
-|---|---:|---:|---:|
-| Poor | 4,790 | 7,246 | 66.1% |
-| Standard | 9,545 | 13,349 | 71.5% |
-| Good | 2,764 | 4,405 | 62.7% |
-
-Worst cell in the confusion matrix: **1,523 Good customers predicted Standard** (34.6% of all Good rows). The model is cautious about the top class, which is the right direction to fail in for a lender but worth knowing.
-
-Feature importance agrees with the EDA, which is the point:
-
-| Feature | Importance |
-|---|---:|
-| Outstanding_Debt | 0.124 |
-| Monthly_Balance | 0.094 |
-| Credit_Utilization_Ratio | 0.091 |
-| Interest_Rate | 0.090 |
-| Credit_Mix | 0.085 |
+A model is the obvious next step, and the data sets the terms for it: the split has to be by `Customer_ID`, because each person appears eight times and a row split would let the model memorise them; the target has to be a score that is stable over two or three months; and the features have to include columns that actually change over time, which most of these do not.
 
 ---
 
@@ -207,7 +182,7 @@ pip install -r requirements.txt
 jupyter notebook "Paisabazaar_Banking_Fraud_Analysis_Capstone_Project.ipynb"
 ```
 
-Run the cells top to bottom. The notebook reads `dataset.csv` from the same folder and runs end to end without errors, ending with the model results.
+Run the cells top to bottom. The notebook reads `dataset.csv` from the same folder and runs end to end without errors, ending with the business recommendations.
 
 **Power BI:** open the `.pbix` and everything is already loaded, no refresh needed. If you do refresh, point the CSV source at `dataset.csv` in this folder, because the saved path is my local machine.
 
@@ -219,9 +194,8 @@ Run the cells top to bottom. The notebook reads `dataset.csv` from the same fold
 |---|---|
 | Kept `NM` as `Unknown` | Merging into `No` inflates non-payment from 35.7% to 47.7%. That is a fake number. |
 | Kept the outliers | 22.9% of rows, all high-side. These are the risky customers, not errors. |
-| Split by `Customer_ID` | Row splits let the model memorise a person across months and score 78.10%. The real number is 68.40%. |
 | Reported the flat lines | Utilization and occupation do not move the score here. Saying so is more useful than hiding it. |
-| Simple model, not tuned | A baseline that beats 53.4% by 15 points proves the patterns. A tuned model would only prove the tuning worked. |
+| No model | The findings are descriptive. A model would need a customer-level split and a target that is stable across months first. |
 
 ---
 
